@@ -41,6 +41,10 @@
     z-index: 1;
 }
 
+#direccionModal .modal-header::after{
+    display: none;
+}
+
 #direccionModal .modal-title {
     font-weight: 700;
     font-size: 1.25rem;
@@ -447,22 +451,21 @@
 
 /* Estilos para el botón de cierre */
 #direccionModal .btn-close {
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: transparent;
     border-radius: 50%;
     width: 28px;
     height: 28px;
-    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    transition: all 0.2s ease;
-    opacity: 0.8;
+    border: 1px solid #fff;
+    color: #fff;
 }
 
 #direccionModal .btn-close:hover {
     background-color: #fff;
-    opacity: 1;
+    color: #e82c2a;
     transform: rotate(90deg);
 }
 
@@ -497,7 +500,7 @@
 
 #direccionModal .close:hover,
 #direccionModal .close-bs4:hover {
-    color: white;
+    color: #e82c2a;
     opacity: 1;
     transform: rotate(90deg);
 }

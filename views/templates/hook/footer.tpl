@@ -12,9 +12,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title text-white" id="direccionModalLabel" style="font-weight: 400;">Generador de Direcciones</h5>
-        <!-- Botón de cierre compatible con Bootstrap 4 y 5 -->
         <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
-          <!-- X visible solo para Bootstrap 4 (se ocultará en BS5) -->
           <span aria-hidden="true" class="close-bs4">&times;</span>
         </button>
       </div>
