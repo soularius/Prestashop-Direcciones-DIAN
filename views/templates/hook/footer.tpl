@@ -99,6 +99,7 @@
             <button class="btn btn-outline-secondary btn-caracter" data-value=" ">Espacio</button>
             <button class="btn btn-outline-secondary btn-caracter" data-value="-">-</button>
             <button class="btn btn-outline-secondary btn-caracter" data-value="#">#</button>
+            <button class="btn btn-outline-secondary btn-caracter" data-value="BIS">BIS</button>
             <button class="btn btn-outline-secondary btn-caracter" data-value=".">.</button>
             <button class="btn btn-outline-secondary btn-borrar" id="btn-backspace">⌫</button>
             <button class="btn btn-outline-danger btn-borrar" id="btn-clear">Limpiar</button>
