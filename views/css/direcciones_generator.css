@@ -398,7 +398,6 @@
 #btn-aplicar {
     background-color: #e82c2a;
     border-color: #e82c2a;
-    padding: 10px 24px;
     font-weight: 600;
     letter-spacing: 0.3px;
     border-radius: 6px;
@@ -422,7 +421,6 @@
 #btn-cancelar {
     background-color: #e82c2a;
     border-color: #e82c2a;
-    padding: 10px 24px;
     font-weight: 600;
     letter-spacing: 0.3px;
     border-radius: 6px;
@@ -445,4 +443,61 @@
 #direccionModal .modal-header {
     display: flex;
     justify-content: space-between;
+}
+
+/* Estilos para el botón de cierre */
+#direccionModal .btn-close {
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.2s ease;
+    opacity: 0.8;
+}
+
+#direccionModal .btn-close:hover {
+    background-color: #fff;
+    opacity: 1;
+    transform: rotate(90deg);
+}
+
+#direccionModal .btn-close:focus {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    outline: none;
+}
+
+/* Para asegurar compatibilidad con Bootstrap 4 */
+#direccionModal .close,
+#direccionModal .close-bs4 {
+    color: white;
+    opacity: 0.8;
+    font-weight: 300;
+    font-size: 1.75rem;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    padding: 0;
+    margin: -10px -5px -10px 0;
+    transition: all 0.2s ease;
+}
+
+/* Ocultar el ícono de Bootstrap 4 cuando se usa Bootstrap 5 */
+.btn-close:not(:empty) {
+    opacity: 0.8;
+}
+
+/* Asegurarse de que el icono Bootstrap 4 esté centrado */
+.close-bs4 {
+    display: inline-block;
+    line-height: 1;
+}
+
+#direccionModal .close:hover,
+#direccionModal .close-bs4:hover {
+    color: white;
+    opacity: 1;
+    transform: rotate(90deg);
 }

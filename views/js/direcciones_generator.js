@@ -134,6 +134,8 @@ function inicializarGenerador() {
         const btnAplicar = document.getElementById('btn-aplicar');
         const btnBackspace = document.getElementById('btn-backspace');
         const btnClear = document.getElementById('btn-clear');
+        const btnCancelar = document.getElementById('btn-cancelar');
+        const btnClose = document.querySelector('#direccionModal .btn-close');
         
         // Verificar que los elementos necesarios existan
         if (!modalDireccionInput || !btnAplicar || !btnBackspace || !btnClear) {
@@ -280,6 +282,25 @@ function inicializarGenerador() {
                 insertarTexto(this.getAttribute('data-value'));
             });
         });
+        
+        // Configurar eventos para los botones de cerrar y cancelar
+        if (btnCancelar) {
+            btnCancelar.addEventListener('click', function() {
+                direccionesGenerator.log('Botón cancelar presionado');
+                closeDireccionModal();
+            });
+        } else {
+            direccionesGenerator.log('Advertencia: Botón cancelar no encontrado');
+        }
+        
+        if (btnClose) {
+            btnClose.addEventListener('click', function() {
+                direccionesGenerator.log('Botón cerrar (X) presionado');
+                closeDireccionModal();
+            });
+        } else {
+            direccionesGenerator.log('Advertencia: Botón cerrar (X) no encontrado');
+        }
         
         // Función para insertar nomenclatura en el input
         function insertarNomenclatura(codigo, descripcion) {

@@ -11,8 +11,12 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title text-white" id="direccionModalLabel">Generador de Direcciones</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title text-white" id="direccionModalLabel" style="font-weight: 400;">Generador de Direcciones</h5>
+        <!-- Botón de cierre compatible con Bootstrap 4 y 5 -->
+        <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
+          <!-- X visible solo para Bootstrap 4 (se ocultará en BS5) -->
+          <span aria-hidden="true" class="close-bs4">&times;</span>
+        </button>
       </div>
       <div class="modal-body">
         <!-- Input dentro de la modal -->
@@ -23,7 +27,7 @@
         
         <!-- Nomenclatura -->
         <div class="nomenclatura-container mb-4">
-          <h6>Nomenclatura</h6>
+          <h6 style="font-weight: 400;">Nomenclatura</h6>
           <div id="nomenclatura-buttons" class="nomenclatura-grid">
             {foreach from=$nomenclatura item=item}
               <button class="btn btn-outline-secondary btn-nomenclatura" 
@@ -37,7 +41,7 @@
         
         <!-- Números -->
         <div class="numeros-container mb-4">
-          <h6>Números</h6>
+          <h6 style="font-weight: 400;">Números</h6>
           <div class="numeros-grid">
             <button class="btn btn-outline-secondary btn-num" data-value="1">1</button>
             <button class="btn btn-outline-secondary btn-num" data-value="2">2</button>
@@ -54,7 +58,7 @@
         
         <!-- Letras -->
         <div class="letras-container">
-          <h6>Letras</h6>
+          <h6 style="font-weight: 400;">Letras</h6>
           <div class="letras-grid">
             <button class="btn btn-outline-secondary btn-letra" data-value="A">A</button>
             <button class="btn btn-outline-secondary btn-letra" data-value="B">B</button>
@@ -98,7 +102,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="btn-cancelar">Cancelar</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-dismiss="modal" id="btn-cancelar">Cancelar</button>
         <button type="button" class="btn btn-primary" id="btn-aplicar">Aplicar</button>
       </div>
     </div>
