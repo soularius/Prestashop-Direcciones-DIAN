@@ -128,8 +128,17 @@ function openDireccionModal(inputField) {
     }
 }
 
+// Variable para rastrear si ya se inicializó
+let direccionesGeneratorInitialized = false;
+
 // Función principal para inicializar el generador de direcciones
 function inicializarGenerador() {
+        // Si ya se ha inicializado, no hacerlo de nuevo
+        if (direccionesGeneratorInitialized) {
+            direccionesGenerator.log('El generador ya fue inicializado anteriormente');
+            return true;
+        }
+        
         const modalDireccionInput = document.getElementById('modal-direccion-input');
         const btnAplicar = document.getElementById('btn-aplicar');
         const btnBackspace = document.getElementById('btn-backspace');
@@ -323,6 +332,10 @@ function inicializarGenerador() {
             modalDireccionInput.value += texto;
             modalDireccionInput.focus();
         }
+        
+        // Marcar como inicializado para evitar duplicados
+        direccionesGeneratorInitialized = true;
+        direccionesGenerator.log('Generador de direcciones inicializado correctamente');
         
         return true; // Indicar que la inicialización fue exitosa
 }
