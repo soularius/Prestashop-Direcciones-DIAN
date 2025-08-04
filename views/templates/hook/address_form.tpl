@@ -21,7 +21,83 @@
     var maxAttempts = 20;
     var mutationObserverActive = false;
     
-    function modifyAddressField() {
+    // Agregar escuchadores para el cambio de país
+    function listenForCountryChanges() {
+      // Posibles selectores para el selector de país
+      const countrySelectors = [
+        'select.form-control.js-country',  // El selector específico que mencionaste
+        'select.js-country',              // Variación de la clase js-country
+        'select[name="id_country"]',       // Selector por nombre
+        '#id_country',                    // Selector por ID
+        'select.form-control[name*="country"]', // Cualquier select con country en el nombre
+        'select[data-address-type="id_country"]' // Por data-attribute
+      ];
+      
+      // Intentar encontrar y configurar el selector de país
+      countrySelectors.forEach(selector => {
+        const countrySelect = document.querySelectorAll(selector);
+        if (countrySelect.length > 0) {
+          countrySelect.forEach(select => {
+            // Evitar configurar múltiples veces el mismo selector
+            if (!select.hasAttribute('data-direcciones-country-listener')) {
+              console.log('Configurando escuchador para cambio de país en:', select);
+              
+              // Marcar como configurado
+              select.setAttribute('data-direcciones-country-listener', 'true');
+              
+              // Guardar el estado actual antes del cambio de país
+              var countryBeforeChange = select.value;
+              
+              // Agregar evento para cuando cambia el país
+              select.addEventListener('change', function() {
+                console.log('País cambiado, configurando observador para detectar actualización del formulario...');
+                
+                // Marcar con timestamp para saber que el país cambió recientemente
+                window.countryChangedTimestamp = Date.now();
+                
+                // Configurar MutationObserver específico para detectar cuando termina la actualización del formulario
+                var formUpdateObserver = new MutationObserver(function(mutations) {
+                  // Verificar si ha pasado suficiente tiempo desde el cambio de país (al menos 500ms)
+                  if (window.countryChangedTimestamp && (Date.now() - window.countryChangedTimestamp > 500)) {
+                    console.log('Detectada actualización del DOM después del cambio de país');
+                    
+                    // Detener este observador específico
+                    formUpdateObserver.disconnect();
+                    
+                    // Programar múltiples intentos de reinicialización para mayor seguridad
+                    for (var delay = 100; delay <= 2000; delay += 300) {
+                      setTimeout(function() {
+                        console.log('Intento de reinicialización después de POST, delay:', delay);
+                        modifyAddressField(true); // true = forzar reinicialización
+                      }, delay);
+                    }
+                    
+                    // Limpiar el timestamp
+                    window.countryChangedTimestamp = null;
+                  }
+                });
+                
+                // Comenzar a observar cambios en el documento
+                formUpdateObserver.observe(document.body, { 
+                  childList: true, 
+                  subtree: true,
+                  attributes: true,
+                  attributeFilter: ['class', 'style', 'disabled']
+                });
+                
+                // También programar reinicialización después de un tiempo fijo como respaldo
+                setTimeout(function() {
+                  console.log('Ejecutando reinicialización programada después del cambio de país');
+                  modifyAddressField(true);
+                }, 1500);
+              });
+            }
+          });
+        }
+      });
+    }
+    
+    function modifyAddressField(forceReinit = false) {
       // Array con posibles selectores para mayor compatibilidad
       var selectores = [
         'input[name="address1"]',
@@ -52,9 +128,15 @@
         console.log('Campo de dirección encontrado y modificado (' + addressInputs.length + ' campos)');
         
         addressInputs.forEach(function(addressInput) {
-          // Solo configurar si no está configurado
-          if (!addressInput.hasAttribute('data-direcciones-configured')) {
-            console.log('Configurando campo:', addressInput);
+          // Configurar si no está configurado o si estamos forzando la reinicialización
+          if (!addressInput.hasAttribute('data-direcciones-configured') || forceReinit) {
+            console.log('Configurando campo:', addressInput, forceReinit ? '(forzado)' : '');
+            
+            // Si ya existe un evento click, eliminarlo antes de agregar uno nuevo
+            if (forceReinit && addressInput._direccionesClickHandler) {
+              addressInput.removeEventListener('click', addressInput._direccionesClickHandler);
+              console.log('Evento click anterior removido');
+            }
             
             // Modificar el campo de dirección
             addressInput.setAttribute('readonly', 'readonly');
@@ -62,28 +144,43 @@
             addressInput.classList.add('direcciones-generator-input');
             addressInput.setAttribute('data-direcciones-configured', 'true');
             
-            // Agregar evento click para abrir el modal
-            addressInput.addEventListener('click', function() {
+            // Definir la función de click
+            function direccionesClickHandler() {
               console.log('Click en campo de dirección');
               
               // Pasar el valor actual al input del modal
               var modalInput = document.getElementById('modal-direccion-input');
               if (modalInput) {
                 modalInput.value = this.value;
+                modalInput.dataset.targetInput = this.name || this.id;
                 
-                // Abrir el modal usando bootstrap 5
-                try {
-                  var modalElement = document.getElementById('direccionModal');
-                  var direccionModal = new bootstrap.Modal(modalElement);
-                  direccionModal.show();
-                  console.log('Modal abierto con Bootstrap 5');
-                } catch (e) {
-                  // Alternativa para bootstrap 4
+                // Intentar con jQuery primero (más fiable en PrestaShop)
+                if (typeof $ !== 'undefined' && typeof $.fn.modal === 'function') {
                   try {
                     $('#direccionModal').modal('show');
-                    console.log('Modal abierto con Bootstrap 4/jQuery');
-                  } catch (e2) {
-                    console.error('Error al abrir modal:', e2);
+                    console.log('Modal abierto con jQuery/Bootstrap');
+                    return; // Terminamos aquí si fue exitoso
+                  } catch (e) {
+                    console.log('Error al abrir modal con jQuery:', e);
+                    // Continuamos con otros métodos
+                  }
+                }
+                
+                // Intentar con Bootstrap 5 (global)
+                try {
+                  var modalElement = document.getElementById('direccionModal');
+                  
+                  // Verificar si bootstrap está definido
+                  if (typeof bootstrap !== 'undefined' && typeof bootstrap.Modal === 'function') {
+                    var modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                    console.log('Modal abierto con Bootstrap 5');
+                    return; // Terminamos aquí si fue exitoso
+                  } else {
+                    console.log('Bootstrap no está definido globalmente');
+                  }
+                } catch (e) {
+                    console.error('Error al abrir modal:', e);
                     
                     // Último recurso: mostrar manualmente
                     try {
@@ -102,7 +199,13 @@
               } else {
                 console.error('Modal input not found');
               }
-            });
+            }
+            
+            // Guardar la referencia a la función para poder eliminarla luego si es necesario
+            addressInput._direccionesClickHandler = direccionesClickHandler;
+            
+            // Agregar evento click para abrir el modal
+            addressInput.addEventListener('click', direccionesClickHandler);
           }
         });
         
@@ -175,5 +278,14 @@
     
     // Iniciar el proceso de modificación
     modifyAddressField();
+    
+    // Configurar detector de cambios de país
+    listenForCountryChanges();
+    
+    // También revisar periódicamente cambios en el campo de país
+    // (por si se agrega después de la carga inicial)
+    setInterval(function() {
+      listenForCountryChanges();
+    }, 3000);
   });
 </script>

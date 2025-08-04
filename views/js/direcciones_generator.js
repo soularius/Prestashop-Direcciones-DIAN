@@ -6,12 +6,24 @@
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
-// Variable global para depuración
+// Variables globales y configuración
 var direccionesGenerator = {
     debug: true,
     log: function(msg) {
         if (this.debug) console.log('[DireccionesGenerator]', msg);
-    }
+    },
+    // Estado de inicialización global
+    initialized: false,
+    // Flag para controlar si hay una inicialización en curso
+    initializingFields: false,
+    // Última vez que se ejecutó la inicialización
+    lastInitTime: 0,
+    // Tiempo mínimo entre reinicios en ms
+    minInitInterval: 1000,
+    // Flag para seguir actualizaciones de país
+    countryChanged: false,
+    // Timestamp de último cambio de país
+    lastCountryChangeTime: 0
 };
 
 // Ejecutar cuando el DOM esté completamente cargado
@@ -31,11 +43,120 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // También buscar y configurar campos de dirección
     configurarCamposDireccion();
+    
+    // Configurar la detección de cambio de país de forma global
+    configurarDetectorCambioPais();
+    
+    // Simplificado: La detección se basa únicamente en MutationObserver y reinicios programados
+    // La verificación periódica se ha eliminado para evitar sobrecarga del sistema
 });
 
+// Función para detectar cambios de país a nivel global
+function configurarDetectorCambioPais() {
+    direccionesGenerator.log('Configurando detector global de cambios de país');
+    
+    // Posibles selectores para el selector de país
+    const countrySelectors = [
+        'select.form-control.js-country',        // Selector específico del usuario
+        'select.js-country',                    // Variación
+        'select[name="id_country"]',            // Por nombre
+        '#id_country',                          // Por ID
+        'select.form-control[name*="country"]',  // Cualquier select con country
+        'select[data-address-type="id_country"]' // Por data attribute
+    ];
+    
+    // Configurar observador para detectar nuevos selectores de país
+    const countryObserver = new MutationObserver(function() {
+        // Buscar los selectores de país y configurarlos
+        countrySelectors.forEach(function(selector) {
+            const countryElements = document.querySelectorAll(selector);
+            if (countryElements.length > 0) {
+                countryElements.forEach(function(element) {
+                    // Solo configurar si no está configurado
+                    if (!element.hasAttribute('data-direcciones-country-watcher')) {
+                        element.setAttribute('data-direcciones-country-watcher', 'true');
+                        direccionesGenerator.log('Detector de país configurado en:', element);
+                        
+                        // Guardar valor original
+                        element.dataset.originalCountry = element.value;
+                        
+                        // Configurar detector de cambios
+                        element.addEventListener('change', function() {
+                            direccionesGenerator.log('¡CAMBIO DE PAÍS DETECTADO!');
+                            direccionesGenerator.countryChanged = true;
+                            direccionesGenerator.lastCountryChangeTime = Date.now();
+                            
+                            // Programar múltiples intentos de reinicialización
+                            [500, 1000, 1500, 2000, 3000, 5000].forEach(function(delay) {
+                                setTimeout(function() {
+                                    direccionesGenerator.log('Intentando reinicializar campos después de ' + delay + 'ms');
+                                    configurarCamposDireccion(true);
+                                }, delay);
+                            });
+                        });
+                    }
+                });
+            }
+        });
+    });
+    
+    // Iniciar la observación del DOM
+    countryObserver.observe(document.body, { childList: true, subtree: true });
+    
+    // También buscar ahora
+    countrySelectors.forEach(function(selector) {
+        const countryElements = document.querySelectorAll(selector);
+        if (countryElements.length > 0) {
+            countryElements.forEach(function(element) {
+                // Solo configurar si no está configurado
+                if (!element.hasAttribute('data-direcciones-country-watcher')) {
+                    element.setAttribute('data-direcciones-country-watcher', 'true');
+                    direccionesGenerator.log('* Detector de país configurado en:', element);
+                    
+                    // Guardar valor original
+                    element.dataset.originalCountry = element.value;
+                    
+                    // Configurar detector de cambios
+                    element.addEventListener('change', function() {
+                        direccionesGenerator.log('¡CAMBIO DE PAÍS DETECTADO!');
+                        direccionesGenerator.countryChanged = true;
+                        direccionesGenerator.lastCountryChangeTime = Date.now();
+                        
+                        // Programar múltiples intentos de reinicialización
+                        [500, 1000, 1500, 2000, 3000, 5000].forEach(function(delay) {
+                            setTimeout(function() {
+                                direccionesGenerator.log('Intentando reinicializar campos después de ' + delay + 'ms');
+                                configurarCamposDireccion(true);
+                            }, delay);
+                        });
+                    });
+                }
+            });
+        }
+    });
+}
+
 // Función para configurar campos de dirección (puede llamarse varias veces)
-function configurarCamposDireccion() {
-    direccionesGenerator.log('Configurando campos de dirección...');
+function configurarCamposDireccion(forceReinit) {
+    // Prevenir múltiples inicializaciones muy seguidas
+    var now = Date.now();
+    if (direccionesGenerator.initializingFields && (now - direccionesGenerator.lastInitTime) < 500) {
+        direccionesGenerator.log('Inicialización ignorada: demasiado cerca de la anterior');
+        return false;
+    }
+    
+    // Si no hay cambio de país y no se fuerza la reinicialización, y la última inicialización fue hace poco,
+    // saltamos esta ejecución para evitar sobrecarga
+    if (!direccionesGenerator.countryChanged && !forceReinit && 
+        (now - direccionesGenerator.lastInitTime) < direccionesGenerator.minInitInterval) {
+        return false;
+    }
+    
+    // Marcar como en proceso de inicialización
+    direccionesGenerator.initializingFields = true;
+    direccionesGenerator.lastInitTime = now;
+    
+    direccionesGenerator.log('Configurando campos de dirección...', forceReinit ? '(forzado)' : '');
     
     // Buscar campos de dirección con múltiples selectores para mayor compatibilidad
     var selectores = [
@@ -49,36 +170,106 @@ function configurarCamposDireccion() {
     
     var addressInputsFound = false;
     
-    // Probar cada selector
+    // Recorrer cada selector y buscar campos de dirección
     selectores.forEach(function(selector) {
-        var addressInputs = document.querySelectorAll(selector);
-        if (addressInputs.length > 0) {
-            direccionesGenerator.log('Campo de dirección encontrado con selector: ' + selector);
+        var inputs = document.querySelectorAll(selector);
+        if (inputs.length > 0) {
             addressInputsFound = true;
             
-            addressInputs.forEach(function(addressInput) {
-                // Comprobar si ya está configurado
-                if (addressInput.hasAttribute('data-direcciones-configured')) {
-                    return;
+            // Configurar cada campo encontrado
+            inputs.forEach(function(input) {
+                var needsConfiguration = forceReinit || !input.hasAttribute('data-direcciones-generator-configured');
+                
+                if (needsConfiguration) {
+                    direccionesGenerator.log('Configurando campo de dirección:', input, forceReinit ? '(reinicialización forzada)' : '');
+                    
+                    // Si ya tiene un controlador de eventos, eliminarlo antes de agregar uno nuevo
+                    if (input._direccionesClickHandler && forceReinit) {
+                        input.removeEventListener('click', input._direccionesClickHandler);
+                        direccionesGenerator.log('Evento click anterior removido');
+                    }
+                    
+                    // Modificar el campo de dirección
+                    input.setAttribute('readonly', 'readonly');
+                    input.setAttribute('placeholder', 'Haga clic para generar la dirección');
+                    input.classList.add('direcciones-generator-input');
+                    input.setAttribute('data-direcciones-generator-configured', 'true');
+                    
+                    // Definir función de click que muestra el modal
+                    function direccionesClickHandler() {
+                        direccionesGenerator.log('Click en campo de dirección');
+                        
+                        // Pasar el valor actual al input del modal
+                        var modalInput = document.getElementById('modal-direccion-input');
+                        if (modalInput) {
+                            modalInput.value = this.value;
+                            
+                            // Guardar referencia al campo original
+                            modalInput.dataset.targetInput = this.name || this.id;
+                            
+                            // Intentar abrir el modal con jQuery primero (más fiable en PrestaShop)
+                            if (typeof $ !== 'undefined' && typeof $.fn.modal === 'function') {
+                                try {
+                                    $('#direccionModal').modal('show');
+                                    direccionesGenerator.log('Modal abierto con jQuery/Bootstrap');
+                                    return; // Terminamos aquí si fue exitoso
+                                } catch (e) {
+                                    direccionesGenerator.log('Error al abrir modal con jQuery:', e);
+                                }
+                            }
+                            
+                            // Intentar con Bootstrap 5
+                            try {
+                                var modalElement = document.getElementById('direccionModal');
+                                
+                                if (typeof bootstrap !== 'undefined' && typeof bootstrap.Modal === 'function') {
+                                    var modal = new bootstrap.Modal(modalElement);
+                                    modal.show();
+                                    direccionesGenerator.log('Modal abierto con Bootstrap 5');
+                                    return;
+                                } else {
+                                    direccionesGenerator.log('Bootstrap no está disponible');
+                                }
+                            } catch (e) {
+                                direccionesGenerator.log('Error al abrir modal con Bootstrap 5:', e);
+                            }
+                            
+                            // Último recurso: mostrar manualmente
+                            try {
+                                var modalElement = document.getElementById('direccionModal');
+                                if (modalElement) {
+                                    modalElement.style.display = 'block';
+                                    modalElement.classList.add('show');
+                                    document.body.classList.add('modal-open');
+                                    direccionesGenerator.log('Modal abierto manualmente');
+                                }
+                            } catch (e3) {
+                                direccionesGenerator.log('Todos los intentos de abrir modal fallaron:', e3);
+                            }
+                        } else {
+                            direccionesGenerator.log('Error: modal-direccion-input no encontrado');
+                        }
+                    }
+                    
+                    // Guardar la referencia a la función para poder eliminarla luego
+                    input._direccionesClickHandler = direccionesClickHandler;
+                    
+                    // Asignar el evento click
+                    input.addEventListener('click', direccionesClickHandler);
                 }
-                
-                // Marcar como configurado
-                addressInput.setAttribute('data-direcciones-configured', 'true');
-                
-                // Aplicar estilos y atributos
-                addressInput.setAttribute('readonly', 'readonly');
-                addressInput.setAttribute('placeholder', 'Haga clic para generar la dirección');
-                addressInput.classList.add('direcciones-generator-input');
-                
-                // Agregar evento click para abrir el modal
-                addressInput.addEventListener('click', function() {
-                    openDireccionModal(this);
-                });
-                
-                direccionesGenerator.log('Campo configurado con éxito: ' + addressInput.name);
             });
         }
     });
+    
+    // Reportar resultados
+    if (addressInputsFound) {
+        direccionesGenerator.log('Campos de dirección configurados correctamente');
+    } else {
+        direccionesGenerator.log('No se encontraron campos de dirección');
+    }
+    
+    // Marcar inicialización como completada
+    direccionesGenerator.initializingFields = false;
     
     return addressInputsFound;
 }
