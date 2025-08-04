@@ -1,0 +1,448 @@
+/**
+ * Módulo Generador de Direcciones - Estilos
+ *
+ * @author    Cascade AI
+ * @copyright 2025
+ * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+
+/* Estilos para el campo de entrada fuera del modal */
+.direcciones-generator-input {
+    cursor: pointer;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-left: 3px solid #e82c2a;
+    transition: all 0.3s ease;
+    padding-left: 12px;
+}
+
+.direcciones-generator-input:hover {
+    background-color: #e9ecef;
+    box-shadow: 0 0 5px rgba(2, 117, 216, 0.3);
+}
+
+/* Estilos para el modal */
+#direccionModal .modal-content {
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 6px 10px rgba(0, 0, 0, 0.12);
+    border: none;
+    overflow: hidden;
+    transform: translateY(0);
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease;
+}
+
+#direccionModal .modal-header {
+    background: linear-gradient(135deg, #e82c2a, #dd6a68);
+    color: white;
+    border-radius: 12px 12px 0 0;
+    padding: 1.25rem 1.5rem;
+    border-bottom: none;
+    position: relative;
+    z-index: 1;
+}
+
+#direccionModal .modal-title {
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+#direccionModal .modal-body {
+    padding: 1.75rem;
+    background-color: #ffffff;
+    position: relative;
+}
+
+/* Input dentro del modal */
+#modal-direccion-input {
+    font-size: 1.15rem;
+    padding: 14px 16px;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    box-shadow: inset 0 2px 3px rgba(0,0,0,.05);
+    margin-bottom: 1.25rem;
+    background-color: #fff;
+    width: 100%;
+    transition: all .2s ease-in-out;
+    font-weight: 500;
+    color: #495057;
+}
+
+#modal-direccion-input:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2);
+    background-color: #f8faff;
+}
+
+/* Estilos para grids */
+.nomenclatura-grid,
+.numeros-grid,
+.letras-grid,
+.caracteres-grid {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: 12px;
+    position: relative;
+}
+
+.nomenclatura-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 14px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,.04);
+    background-color: #f9f9f9;
+    scrollbar-width: thin;
+    scrollbar-color: #c1c9d0 #f1f3f5;
+}
+
+.nomenclatura-grid::-webkit-scrollbar {
+    width: 8px;
+}
+
+.nomenclatura-grid::-webkit-scrollbar-track {
+    background: #f1f3f5;
+    border-radius: 4px;
+}
+
+.nomenclatura-grid::-webkit-scrollbar-thumb {
+    background-color: #c1c9d0;
+    border-radius: 4px;
+    border: 2px solid #f1f3f5;
+}
+
+.nomenclatura-grid::-webkit-scrollbar-thumb:hover {
+    background-color: #a8b2bd;
+}
+
+.numeros-grid {
+    grid-template-columns: repeat(10, 1fr);
+}
+
+.letras-grid {
+    grid-template-columns: repeat(13, 1fr);
+}
+
+.caracteres-grid {
+    grid-template-columns: repeat(6, 1fr);
+}
+
+/* Animación de entrada para el modal */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal.show .modal-dialog {
+    animation: modalFadeIn 0.3s ease-out forwards;
+}
+
+/* Estilos de enfoque y estado activo */
+.btn:focus {
+    box-shadow: 0 0 0 3px rgba(216, 2, 2, 0.25);
+    outline: none;
+}
+
+.btn-nomenclatura:focus,
+.btn-num:focus,
+.btn-letra:focus,
+.btn-caracter:focus {
+    box-shadow: 0 0 0 3px rgba(216, 2, 2, 0.25);
+    outline: none;
+    z-index: 2;
+}
+
+/* Mejoras responsive */
+@media (max-width: 768px) {
+    .numeros-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .letras-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+    
+    .caracteres-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Estilos para botones */
+.btn-nomenclatura {
+    text-align: left;
+    font-size: 12px;
+    white-space: normal;
+    height: auto;
+    border: 1px solid #848484;
+    color: #848484;
+    display: flex;
+    flex-direction: column;
+    line-height: 13px;
+    min-height: 50px;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-nomenclatura:hover {
+    background-color: #e82c2a;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0,0,0,.08);
+    border-color: #e82c2a;
+}
+
+.btn-nomenclatura:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+
+.btn-nomenclatura .codigo {
+    font-weight: bold;
+    margin-right: 5px;
+    color: #848484;
+}
+
+.btn-nomenclatura:hover .codigo {
+    color: white;
+}
+
+.btn-num,
+.btn-letra,
+.btn-caracter {
+    min-width: 42px;
+    text-align: left;
+    font-size: 12px;
+    white-space: normal;
+    height: auto;
+    border: 1px solid #848484;
+    color: #848484;
+    display: flex;
+    flex-direction: column;
+    line-height: 13px;  
+    min-height: 50px;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-num:hover,
+.btn-letra:hover,
+.btn-caracter:hover {
+    transform: scale(1.08);
+    z-index: 2;
+    box-shadow: 0 3px 6px rgba(0,0,0,.1);
+}
+
+.btn-num:active,
+.btn-letra:active,
+.btn-caracter:active {
+    transform: scale(0.96);
+    box-shadow: 0 1px 2px rgba(0,0,0,.05);
+}
+
+.btn-num {
+    background-color: #f8f9fa;
+    color: #495057;
+}
+
+.btn-letra {
+    background-color: #e9ecef;
+    color: #212529;
+}
+
+.btn-caracter {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
+/* Contenedores de secciones */
+.nomenclatura-container,
+.numeros-container,
+.letras-container,
+.especiales-container {
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 22px;
+    margin-bottom: 22px;
+    position: relative;
+}
+
+.nomenclatura-container:last-child,
+.numeros-container:last-child,
+.letras-container:last-child,
+.especiales-container:last-child {
+    border-bottom: none;
+    padding-bottom: 10px;
+    margin-bottom: 0;
+}
+
+.nomenclatura-container h6,
+.numeros-container h6,
+.letras-container h6,
+.especiales-container h6 {
+    color: #343a40;
+    font-weight: 700;
+    margin-bottom: 14px;
+    font-size: 1.05rem;
+    position: relative;
+    padding-left: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.nomenclatura-container h6:before,
+.numeros-container h6:before,
+.letras-container h6:before,
+.especiales-container h6:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 20px;
+    background: linear-gradient(to bottom, #e82c2a, #dd6a68);
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(2, 117, 216, 0.2);
+}
+
+/* Estilos para botones activos */
+.btn-nomenclatura.active {
+    background-color: #e82c2a;
+    color: white;
+    border-color: #e82c2a;
+    box-shadow: 0 3px 8px rgba(2, 117, 216, 0.3);
+    position: relative;
+}
+
+.btn-nomenclatura.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background-color: #e82c2a;
+}
+
+.btn-nomenclatura.active .codigo {
+    color: white;
+}
+
+/* Botones especiales */
+#btn-backspace, #btn-clear {
+    font-weight: 700;
+    position: relative;
+    overflow: hidden;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+#btn-backspace {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+
+#btn-backspace:hover {
+    background-color: #f1b0b7;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(114, 28, 36, 0.2);
+}
+
+#btn-backspace:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(114, 28, 36, 0.15);
+}
+
+#btn-clear {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+    box-shadow: 0 1px 3px rgba(220, 53, 69, 0.3);
+}
+
+#btn-clear:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(220, 53, 69, 0.4);
+}
+
+#btn-clear:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(220, 53, 69, 0.3);
+}
+
+/* Botones del footer */
+#direccionModal .modal-footer {
+    border-top: 1px solid #f0f2f5;
+    padding: 1.25rem 1.75rem;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#btn-aplicar {
+    background-color: #e82c2a;
+    border-color: #e82c2a;
+    padding: 10px 24px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border-radius: 6px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+#btn-aplicar:hover {
+    background-color: #dd6a68;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(216, 2, 2, 0.4);
+}
+
+#btn-aplicar:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(216, 2, 2, 0.4);
+}
+
+
+#btn-cancelar {
+    background-color: #e82c2a;
+    border-color: #e82c2a;
+    padding: 10px 24px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border-radius: 6px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+#btn-cancelar:hover {
+    background-color: #dd6a68;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(216, 2, 2, 0.4);
+}
+
+#btn-cancelar:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(216, 2, 2, 0.4);
+}
+
+#direccionModal .modal-header {
+    display: flex;
+    justify-content: space-between;
+}
