@@ -11,7 +11,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title text-white" id="direccionModalLabel" style="font-weight: 400;">Generador de Direcciones</h5>
+        <h5 class="modal-title text-white" id="direccionModalLabel" style="font-weight: 300;font-family: inherit;">Generador de Direcciones</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true" class="close-bs4">&times;</span>
         </button>
