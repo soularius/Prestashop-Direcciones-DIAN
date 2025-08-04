@@ -26,6 +26,12 @@
         <!-- Nomenclatura -->
         <div class="nomenclatura-container mb-4">
           <h6 style="font-weight: 400;">Nomenclatura</h6>
+          
+          <!-- Buscador de nomenclatura -->
+          <div class="search-container mb-2">
+            <input type="text" id="buscar-nomenclatura" class="form-control" placeholder="Buscar nomenclatura..." autocomplete="off">
+          </div>
+          
           <div id="nomenclatura-buttons" class="nomenclatura-grid">
             {foreach from=$nomenclatura item=item}
               <button class="btn btn-outline-secondary btn-nomenclatura" 

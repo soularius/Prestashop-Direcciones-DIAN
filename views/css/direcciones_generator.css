@@ -214,6 +214,30 @@
     color: white !important;
 }
 
+/* Estilos para el buscador de nomenclatura */
+.search-container {
+    margin-bottom: 15px;
+}
+
+#buscar-nomenclatura {
+    border-radius: 8px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+#buscar-nomenclatura:focus {
+    border-color: #e82c2a;
+    box-shadow: 0 0 0 3px rgba(232, 44, 42, 0.2);
+    outline: none;
+}
+
+.btn-nomenclatura.oculto {
+    display: none;
+}
+
 .btn-nomenclatura .codigo {
     font-weight: bold;
     margin-right: 5px;

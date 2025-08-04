@@ -264,6 +264,32 @@ function inicializarGenerador() {
             modalDireccionInput.focus();
         });
         
+        // Configurar el buscador de nomenclatura
+        const buscarNomenclatura = document.getElementById('buscar-nomenclatura');
+        if (buscarNomenclatura) {
+            buscarNomenclatura.addEventListener('input', function() {
+                filtrarNomenclatura(this.value.toLowerCase());
+            });
+            
+            // Función para filtrar nomenclatura
+            function filtrarNomenclatura(texto) {
+                direccionesGenerator.log('Filtrando nomenclatura: ' + texto);
+                
+                document.querySelectorAll('.btn-nomenclatura').forEach(btn => {
+                    const codigo = btn.getAttribute('data-codigo').toLowerCase();
+                    const descripcion = btn.getAttribute('data-descripcion').toLowerCase();
+                    
+                    if (codigo.includes(texto) || descripcion.includes(texto)) {
+                        btn.classList.remove('oculto');
+                    } else {
+                        btn.classList.add('oculto');
+                    }
+                });
+            }
+        } else {
+            direccionesGenerator.log('Error: Buscador de nomenclatura no encontrado');
+        }
+        
         // Configurar eventos para botones de nomenclatura
         document.querySelectorAll('.btn-nomenclatura').forEach(btn => {
             btn.addEventListener('click', function() {
@@ -344,17 +370,31 @@ function inicializarGenerador() {
 var direccionesInitAttempts = 0;
 var maxDireccionesInitAttempts = 10;
 
+// Rastreador global para evitar múltiples intentos en el mismo ciclo
+var inicializacionEnProceso = false;
+
 function intentarInicializarGenerador() {
+    // Evitar inicializaciones múltiples simultáneas
+    if (inicializacionEnProceso || direccionesGeneratorInitialized) {
+        direccionesGenerator.log('Inicialización ya en proceso o completada');
+        return;
+    }
+    
+    inicializacionEnProceso = true;
     console.log('Intento de inicialización #' + (direccionesInitAttempts + 1));
     var result = inicializarGenerador();
     
     if (result) {
         console.log('Generador de direcciones inicializado correctamente');
+        // Ya no necesitamos más intentos
+        inicializacionEnProceso = false;
     } else if (direccionesInitAttempts < maxDireccionesInitAttempts) {
         direccionesInitAttempts++;
+        inicializacionEnProceso = false; // Permitir el próximo intento
         setTimeout(intentarInicializarGenerador, 1000); // Reintentar cada segundo
         console.log('Reintentando inicialización... (' + direccionesInitAttempts + '/' + maxDireccionesInitAttempts + ')');
     } else {
+        inicializacionEnProceso = false;
         console.error('No se pudo inicializar el generador después de ' + maxDireccionesInitAttempts + ' intentos');
     }
 }
